@@ -31,28 +31,33 @@ project ( lua C )
 
 # LUA_VERSION must be one of lua51, lua52, lua53, lua54
 
-include(FetchContent)
-FetchContent_Declare(
-  lua51
-  URL      https://www.lua.org/ftp/lua-5.1.5.tar.gz
-  URL_HASH SHA256=2640fc56a795f29d28ef15e13c34a47e223960b0240e8cb0a82d9b0738695333
-)
-FetchContent_Declare(
-  lua52
-  URL      https://www.lua.org/ftp/lua-5.2.4.tar.gz
-  URL_HASH SHA256=b9e2e4aad6789b3b63a056d442f7b39f0ecfca3ae0f1fc0ae4e9614401b69f4b
-)
-FetchContent_Declare(
-  lua53
-  URL      https://www.lua.org/ftp/lua-5.3.6.tar.gz
-  URL_HASH SHA256=fc5fd69bb8736323f026672b1b7235da613d7177e72558893a0bdcd320466d60
-)
-FetchContent_Declare(
-  lua54
-  URL      https://www.lua.org/ftp/lua-5.4.4.tar.gz
-  URL_HASH SHA256=164c7849653b80ae67bec4b7473b884bf5cc8d2dca05653475ec2ed27b9ebf61
-)
-FetchContent_MakeAvailable(${LUA_VERSION})
+if (NOT LUA_LOCAL_SOURCE_DIR)
+  include(FetchContent)
+  FetchContent_Declare(
+    lua51
+    URL      https://www.lua.org/ftp/lua-5.1.5.tar.gz
+    URL_HASH SHA256=2640fc56a795f29d28ef15e13c34a47e223960b0240e8cb0a82d9b0738695333
+  )
+  FetchContent_Declare(
+    lua52
+    URL      https://www.lua.org/ftp/lua-5.2.4.tar.gz
+    URL_HASH SHA256=b9e2e4aad6789b3b63a056d442f7b39f0ecfca3ae0f1fc0ae4e9614401b69f4b
+  )
+  FetchContent_Declare(
+    lua53
+    URL      https://www.lua.org/ftp/lua-5.3.6.tar.gz
+    URL_HASH SHA256=fc5fd69bb8736323f026672b1b7235da613d7177e72558893a0bdcd320466d60
+  )
+  FetchContent_Declare(
+    lua54
+    URL      https://www.lua.org/ftp/lua-5.4.4.tar.gz
+    URL_HASH SHA256=164c7849653b80ae67bec4b7473b884bf5cc8d2dca05653475ec2ed27b9ebf61
+  )
+  FetchContent_MakeAvailable(${LUA_VERSION})
+  set(LUA_SOURCE_ROOT "${${LUA_VERSION}_SOURCE_DIR}")
+else()
+  set(LUA_SOURCE_ROOT "${LUA_LOCAL_SOURCE_DIR}")
+endif()
 
 # Easen warnings - disable Werror for Lua sources
 string(REGEX REPLACE "( |^)/W[0-9]( |$)" "\\1/W2\\2" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -64,7 +69,7 @@ string(REGEX REPLACE "-Werror" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 string(REGEX REPLACE "-Wno-error=[^ ]*" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 string(REGEX REPLACE "-Wno-error=[^ ]*" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 
-set(LUA_SOURCE_FOLDER "${${LUA_VERSION}_SOURCE_DIR}/src")
+set(LUA_SOURCE_FOLDER "${LUA_SOURCE_ROOT}/src")
 
 file(GLOB LOCAL_SOURCES_H ${LUA_SOURCE_FOLDER}/*.h)
 file(GLOB LOCAL_SOURCES_C ${LUA_SOURCE_FOLDER}/*.c)

@@ -37,16 +37,20 @@ string(REGEX REPLACE "-Wno-error=[^ ]*" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 string(REGEX REPLACE "-Wno-error=[^ ]*" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 
 # Download source
-include(FetchContent)
-FetchContent_Declare(
-  luajit21
-  GIT_REPOSITORY https://github.com/LuaJIT/LuaJIT.git
-  GIT_TAG        04dca7911ea255f37be799c18d74c305b921c1a6 # 2.1.0-beta3+ where mac builds without extra setup
-)
-FetchContent_MakeAvailable(luajit21)
+if (NOT LUAJIT_LOCAL_SOURCE_DIR)
+  include(FetchContent)
+  FetchContent_Declare(
+    luajit21
+    GIT_REPOSITORY https://github.com/LuaJIT/LuaJIT.git
+    GIT_TAG        04dca7911ea255f37be799c18d74c305b921c1a6 # 2.1.0-beta3+ where mac builds without extra setup
+  )
+  FetchContent_MakeAvailable(luajit21)
+  set(LUA_SRC_FOLDER "${luajit21_SOURCE_DIR}")
+else()
+  set(LUA_SRC_FOLDER "${LUAJIT_LOCAL_SOURCE_DIR}")
+endif()
 
-set(LUA_SRC_FOLDER "${luajit21_SOURCE_DIR}")
-set(LUA_BIN_FOLDER "${luajit21_BINARY_DIR}")
+set(LUA_BIN_FOLDER "${CMAKE_CURRENT_BINARY_DIR}/luajit-build")
 # note that the / at the end means that we copy folder contents, not the folder itself
 file(COPY ${LUA_SRC_FOLDER}/ DESTINATION ${LUA_BIN_FOLDER})
 
