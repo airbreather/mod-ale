@@ -806,7 +806,14 @@ void ALE::InvalidateObjects()
 void ALE::Report(lua_State* _L)
 {
     const char* msg = lua_tostring(_L, -1);
-    ALE_LOG_ERROR("{}", msg);
+    if (msg)
+    {
+        ALE_LOG_ERROR("{}", msg);
+    }
+    else
+    {
+        ALE_LOG_ERROR("[ALE::Report]: Error logging the error!");
+    }
     lua_pop(_L, 1);
 }
 
